@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028e8ca92060f7847bcb3da70579c35e, type: 3}
   m_Name: MainPlayerInventory
   m_EditorClassIdentifier: 
+  totalAmountOfSlots: 10

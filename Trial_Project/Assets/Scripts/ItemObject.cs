@@ -15,6 +15,7 @@ public abstract class ItemObject : ScriptableObject
     public bool isStackable;
 
     abstract public void Use(Item item);
+    abstract public void UseEquipped(Item item);
 }
 
 [System.Serializable]
@@ -26,7 +27,7 @@ public class Item
     public ItemType itemtype;
     public bool isStackable;
     public ItemObject itemObject;
-    public int itemDurability;
+    public int itemUses;
 
     public Item(ItemObject item)
     {
@@ -36,17 +37,7 @@ public class Item
         itemtype = item.ItemType;
         isStackable = item.isStackable;
         itemObject = item;
-    }
-
-    public Item(CrystalObject item)
-    {
-        name = item.name;
-        id = item.id;
-        ui_icon = item.ui_icon;
-        itemtype = item.ItemType;
-        isStackable = item.isStackable;
-        itemDurability = item.MaxDurability;
-        itemObject = item;
+        itemUses = 1;
     }
 
     public Item(Item item)
@@ -57,5 +48,6 @@ public class Item
         itemtype = item.itemtype;
         isStackable = item.isStackable;
         itemObject = item.itemObject;
+        itemUses = item.itemUses;
     }
 }

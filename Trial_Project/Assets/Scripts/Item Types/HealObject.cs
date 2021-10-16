@@ -12,4 +12,9 @@ public class HealObject : ItemObject
         Debug.Log($"Healing {healAmount} hp");
         InventoryEvents.LoseItem(item);
     }
+
+    public override void UseEquipped(Item item)
+    {
+        throw new System.NotImplementedException();
+    }
 }

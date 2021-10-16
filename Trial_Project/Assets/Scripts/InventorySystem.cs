@@ -6,10 +6,16 @@ using System;
 [CreateAssetMenu(fileName = "New Inventory", menuName = "Inventory System/Inventory")]
 public class InventorySystem : ScriptableObject
 {
+    [SerializeField] int totalAmountOfSlots;
     Dictionary<Item, int> items = new Dictionary<Item, int>();
     Item currentlyEquippedCrystal;
-    public Item CurrentlyEquippedCrystal => currentlyEquippedCrystal;
+
+
+    public int TotalAmountOfSlots => totalAmountOfSlots;
     public Dictionary<Item, int> GetItemsInInventory() => items;
+    public Item CurrentlyEquippedCrystal => currentlyEquippedCrystal;
+
+
 
     private void Awake()
     {
@@ -18,15 +24,18 @@ public class InventorySystem : ScriptableObject
 
     private void OnEnable()
     {
-        InventoryEvents.ItemPickedUp += AddItem;
+        InventoryEvents.ItemGained += AddItem;
+        InventoryEvents.MultipleItemsGained += AddMultipleItems;
         InventoryEvents.ItemLost += LoseItem;
         InventoryEvents.UseItem += UseItem;
         InventoryEvents.EquipCrystal += Equip;
+        currentlyEquippedCrystal = null;
     }
 
     private void OnDisable()
     {
-        InventoryEvents.ItemPickedUp -= AddItem;
+        InventoryEvents.ItemGained -= AddItem;
+        InventoryEvents.MultipleItemsGained -= AddMultipleItems;
         InventoryEvents.ItemLost -= LoseItem;
         InventoryEvents.UseItem -= UseItem;
         InventoryEvents.EquipCrystal += Equip;
@@ -61,25 +70,57 @@ public class InventorySystem : ScriptableObject
 
         if (itemMatch != null && newItem.isStackable)
         {
-            items[itemMatch]++;
+            items[itemMatch] += 1;
         }
-        else
+        else if (totalAmountOfSlots > items.Count)
         {
             Item item = new Item(newItem);
             items.Add(item, 1);
         }
+        else
+        {
+            Debug.Log($"Inventory was full discarding {newItem.name}");
+        }
 
     }
 
-    public void Equip(CrystalObject crystalObject)
+    public void AddMultipleItems(Item newItem, int amount)
     {
-        Item newItem = new Item(crystalObject);
+        Item itemMatch = FindMatchingItem(newItem);
 
-        bool hasItem = CheckForItem(newItem);
-
-        if (hasItem)
+        if (itemMatch != null && newItem.isStackable)
         {
-            currentlyEquippedCrystal = newItem;
+            items[itemMatch] += amount;
+        }
+        else if (totalAmountOfSlots >= amount + items.Count)
+        {
+            Item item = new Item(newItem);
+            items.Add(item, amount);
+        }
+        else if(totalAmountOfSlots > items.Count)
+        {
+            Item item = new Item(newItem);
+            items.Add(item, totalAmountOfSlots - items.Count);
+            Debug.Log($"Inventory was full discarding {amount + items.Count - totalAmountOfSlots} {newItem.name}");
+        }
+        else
+        {
+            Debug.Log($"Inventory was full discarding {amount} {newItem.name}");
+        }
+
+    }
+
+    public void Equip(Item crystalItem)
+    {
+
+        if (items.ContainsKey(crystalItem))
+        {
+            if (currentlyEquippedCrystal != null)
+            {
+               InventoryEvents.PickUpItem(currentlyEquippedCrystal);
+            }
+            currentlyEquippedCrystal = crystalItem;
+            InventoryEvents.ItemLost(crystalItem);
         }
     }
 

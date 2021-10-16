@@ -14,7 +14,7 @@ public class ItemTester : MonoBehaviour
 
     public void PickUpItem()
     {
-        InventoryEvents.ItemPickedUp(item);
+        InventoryEvents.ItemGained(item);
     }
 
     public void UseItem()

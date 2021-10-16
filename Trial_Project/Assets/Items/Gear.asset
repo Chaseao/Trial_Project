@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Gear
   m_EditorClassIdentifier: 
   id: 0
-  ui_icon: {fileID: 0}
+  ui_icon: {fileID: 21300000, guid: 87b93f308a02130489f636204f97af6d, type: 3}
+  isStackable: 0

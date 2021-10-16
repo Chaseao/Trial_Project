@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Fire Crystal
   m_EditorClassIdentifier: 
   id: 0
-  ui_icon: {fileID: 0}
-  maxDurability: 5
+  ui_icon: {fileID: 21300000, guid: f338a87a1104f1f4db153743dfb4c64f, type: 3}
+  isStackable: 0
+  maxUses: 3
   crystalType: {fileID: 11400000, guid: ae8c9a35093b7d04982c6fc6f3f77b31, type: 2}
