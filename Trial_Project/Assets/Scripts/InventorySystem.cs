@@ -25,20 +25,18 @@ public class InventorySystem : ScriptableObject
     private void OnEnable()
     {
         InventoryEvents.ItemGained += AddItem;
-        InventoryEvents.MultipleItemsGained += AddMultipleItems;
         InventoryEvents.ItemLost += LoseItem;
-        InventoryEvents.UseItem += UseItem;
-        InventoryEvents.EquipCrystal += Equip;
+        InventoryEvents.ItemUsed += UseItem;
+        InventoryEvents.CrystalEquipped += Equip;
         currentlyEquippedCrystal = null;
     }
 
     private void OnDisable()
     {
         InventoryEvents.ItemGained -= AddItem;
-        InventoryEvents.MultipleItemsGained -= AddMultipleItems;
         InventoryEvents.ItemLost -= LoseItem;
-        InventoryEvents.UseItem -= UseItem;
-        InventoryEvents.EquipCrystal += Equip;
+        InventoryEvents.ItemUsed -= UseItem;
+        InventoryEvents.CrystalEquipped -= Equip;
     }
 
     public void PrintItems()
@@ -56,9 +54,9 @@ public class InventorySystem : ScriptableObject
 
     public void UseItem(Item newItem)
     {
-        bool hasItem = CheckForItem(newItem);
+        bool itemInInventory = CheckForItemOfSameType(newItem);
 
-        if (hasItem)
+        if (itemInInventory)
         {
             newItem.itemObject.Use(newItem);
         }
@@ -66,7 +64,7 @@ public class InventorySystem : ScriptableObject
 
     public void AddItem(Item newItem)
     {
-        Item itemMatch = FindMatchingItem(newItem);
+        Item itemMatch = FindMatchingItemOfSameType(newItem);
 
         if (itemMatch != null && newItem.isStackable)
         {
@@ -84,53 +82,29 @@ public class InventorySystem : ScriptableObject
 
     }
 
-    public void AddMultipleItems(Item newItem, int amount)
-    {
-        Item itemMatch = FindMatchingItem(newItem);
-
-        if (itemMatch != null && newItem.isStackable)
-        {
-            items[itemMatch] += amount;
-        }
-        else if (totalAmountOfSlots >= amount + items.Count)
-        {
-            Item item = new Item(newItem);
-            items.Add(item, amount);
-        }
-        else if(totalAmountOfSlots > items.Count)
-        {
-            Item item = new Item(newItem);
-            items.Add(item, totalAmountOfSlots - items.Count);
-            Debug.Log($"Inventory was full discarding {amount + items.Count - totalAmountOfSlots} {newItem.name}");
-        }
-        else
-        {
-            Debug.Log($"Inventory was full discarding {amount} {newItem.name}");
-        }
-
-    }
-
-    public void Equip(Item crystalItem)
+    public void Equip(Item itemToEquip)
     {
 
-        if (items.ContainsKey(crystalItem))
+        if (items.ContainsKey(itemToEquip))
         {
             if (currentlyEquippedCrystal != null)
             {
-               InventoryEvents.PickUpItem(currentlyEquippedCrystal);
+               InventoryEvents.GainItem(currentlyEquippedCrystal);
             }
-            currentlyEquippedCrystal = crystalItem;
-            InventoryEvents.ItemLost(crystalItem);
+
+            currentlyEquippedCrystal = itemToEquip;
+            InventoryEvents.ItemLost(itemToEquip);
         }
     }
 
     public void LoseItem(Item newItem)
     {
-        Item matchingItem = FindMatchingItem(newItem);
+        Item matchingItem = FindMatchingItemOfSameType(newItem);
 
         if (matchingItem != null)
         {
             items[matchingItem]--;
+
             if(items[matchingItem] < 1)
             {
                 items.Remove(matchingItem);
@@ -138,33 +112,33 @@ public class InventorySystem : ScriptableObject
         }
     }
 
-    private bool CheckForItem(Item newItem)
+    private bool CheckForItemOfSameType(Item newItem)
     {
-        bool hasItem = false;
+        bool inventoryHasItemOfSameType = false;
 
         foreach (Item item in items.Keys)
         {
             if (newItem.itemObject.Equals(item.itemObject))
             {
-                hasItem = true;
+                inventoryHasItemOfSameType = true;
             }
         }
 
-        return hasItem;
+        return inventoryHasItemOfSameType;
     }
 
-    private Item FindMatchingItem(Item newItem)
+    private Item FindMatchingItemOfSameType(Item newItem)
     {
-        Item matchingItem = null;
+        Item matchingItemOfSameType = null;
 
         foreach (Item item in items.Keys)
         {
-            if (newItem.itemObject.Equals(item.itemObject) && matchingItem == null)
+            if (newItem.itemObject.Equals(item.itemObject) && matchingItemOfSameType == null)
             {
-                matchingItem = item;
+                matchingItemOfSameType = item;
             }
         }
 
-        return matchingItem;
+        return matchingItemOfSameType;
     }
 }

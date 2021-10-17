@@ -28,7 +28,7 @@ public class SlotUI : MonoBehaviour
 
         if (slot.item.isStackable)
         {
-            textBox.text = $"{slot.amount}";
+            textBox.text = slot.amount.ToString();
         }
         else
         {

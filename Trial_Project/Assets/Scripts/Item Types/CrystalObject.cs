@@ -3,20 +3,14 @@
 
 public class CrystalObject : ItemObject
 {
-    //You will need to fill out this class here. YOu will need to derive from ItemObject.
-    //A crystal object should be set to a type (water, fire, or nature) and have a limit 
-    //to how many uses you get from the crystal.
     [SerializeField] int maxUses;
     [SerializeField] CrystalTypes crystalType;
 
-    private void OnEnable()
-    {
-        ItemType = ItemType.Crystal;
-    }
+    private void OnEnable() => ItemType = ItemType.Crystal;
 
     override public void Use(Item item)
     {
-        InventoryEvents.EquipCrystal(item);
+        InventoryEvents.CrystalEquipped(item);
         Debug.Log($"Equiping {crystalType.name} with {CalculateRemainingUses(item)} left");
     }
         

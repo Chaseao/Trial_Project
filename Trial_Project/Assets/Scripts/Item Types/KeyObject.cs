@@ -13,8 +13,5 @@ public class KeyObject : ItemObject
         Debug.Log("Key item...");
     }
 
-    public override void UseEquipped(Item item)
-    {
-        throw new System.NotImplementedException();
-    }
+    public override void UseEquipped(Item item) { }
 }

@@ -14,73 +14,67 @@ public class InventoryUI : MonoBehaviour
     Slot[][] slots;
     int currentSlotSet = 0;
 
-    List<GameObject> children = new List<GameObject>();
-
-    private void Start()
-    {
-        foreach (CanvasRenderer childDisplayed in transform.GetComponentsInChildren<CanvasRenderer>())
-        {
-            if (!childDisplayed.gameObject.GetComponent<InventorySlotUI>())
-            {
-                children.Add(childDisplayed.gameObject);
-            }
-        }
-
-        HideInventory();
-        UpdateInventoryUI();
-        UpdateEquipmentUI();
-    }
+    List<GameObject> childrenToControl = new List<GameObject>();
 
     private void OnEnable()
     {
         InventoryEvents.ItemGained += UpdateInventoryUI;
-        InventoryEvents.MultipleItemsGained += UpdateInventoryUI;
         InventoryEvents.ItemLost += UpdateInventoryUI;
-        InventoryEvents.EquipCrystal += UpdateEquipmentUI;
-        InventoryEvents.InventoryOpenned += ShowInventory;
+        InventoryEvents.CrystalEquipped += UpdateEquipmentUI;
+        InventoryEvents.InventoryOpened += ShowInventory;
         InventoryEvents.InventoryClosed += HideInventory;
     }
 
     private void OnDisable()
     {
         InventoryEvents.ItemGained -= UpdateInventoryUI;
-        InventoryEvents.ItemGained -= UpdateInventoryUI;
         InventoryEvents.ItemLost -= UpdateInventoryUI;
-        InventoryEvents.EquipCrystal -= UpdateEquipmentUI;
-        InventoryEvents.InventoryOpenned -= ShowInventory;
+        InventoryEvents.CrystalEquipped -= UpdateEquipmentUI;
+        InventoryEvents.InventoryOpened -= ShowInventory;
         InventoryEvents.InventoryClosed -= HideInventory;
     }
 
-    private void CreateArray()
+    private void Start()
     {
+        SetListOfChildrenToControl();
+        HideInventory();
+        UpdateInventoryUI();
+        UpdateEquipmentUI();
+    }
+
+    private void SetListOfChildrenToControl()
+    {
+        CanvasRenderer[] childrenWithCanvasRenderer = transform.GetComponentsInChildren<CanvasRenderer>();
+
+        foreach (CanvasRenderer child in childrenWithCanvasRenderer)
+        {
+            bool isAInventorySlot = child.gameObject.GetComponent<InventorySlotUI>();
+            if (isAInventorySlot == false)
+            {
+                childrenToControl.Add(child.gameObject);
+            }
+        }
+    }
+
+    private void CreateEmptyInventorySlotsArray()
+    {
+        SetArrayDimensions();
+
         slots = new Slot[totalSetsOfSlots][];
-        for(int i = 0; i < totalSetsOfSlots; i++)
+        for (int i = 0; i < totalSetsOfSlots; i++)
         {
             slots[i] = new Slot[totalSlotsInSet];
         }
     }
 
-    public void UpdateEquipmentUI()
+    private void SetArrayDimensions()
     {
-        if (connectedInventory.CurrentlyEquippedCrystal != null)
-        {
-            Slot newSlot = new Slot(connectedInventory.CurrentlyEquippedCrystal, 1);
-            displayUI.SetEquipmentSlot(newSlot);
-            UpdateInventoryUI();
-        }
-    }
-
-    public void UpdateEquipmentUI(Item notNeeded)
-    {
-        UpdateEquipmentUI();
-    }
-
-    public void UpdateInventoryUI()
-    {
-        Dictionary<Item, int> inventory = connectedInventory.GetItemsInInventory();
         totalSlotsInSet = displayUI.GetAmountOfSlots();
         totalSetsOfSlots = 1 + connectedInventory.TotalAmountOfSlots / totalSlotsInSet;
-        CreateArray();
+    }
+
+    private void FillArraySlotsWithItemsFromInventory(Dictionary<Item, int> inventory)
+    {
         int i = 0;
         int j = 0;
 
@@ -101,22 +95,31 @@ public class InventoryUI : MonoBehaviour
                 break;
             }
         }
-        displayUI.UpdateSlots(slots[currentSlotSet]);
     }
 
     public void UpdateInventoryUI(Item notNeeded = null)
     {
-        UpdateInventoryUI();
+        Dictionary<Item, int> inventory = connectedInventory.GetItemsInInventory();
+
+        CreateEmptyInventorySlotsArray();
+        FillArraySlotsWithItemsFromInventory(inventory);
+
+        displayUI.UpdateSlots(slots[currentSlotSet]);
     }
 
-    public void UpdateInventoryUI(Item notNeeded = null, int alsoNotNeeded = 1)
+    public void UpdateEquipmentUI(Item notNeeded = null)
     {
-        UpdateInventoryUI();
+        if (connectedInventory.CurrentlyEquippedCrystal != null)
+        {
+            Slot newSlot = new Slot(connectedInventory.CurrentlyEquippedCrystal, 1);
+            displayUI.SetEquipmentSlot(newSlot);
+            UpdateInventoryUI();
+        }
     }
 
     private void HideInventory()
     {
-        foreach(GameObject child in children)
+        foreach(GameObject child in childrenToControl)
         {
             child.SetActive(false);
         }
@@ -124,7 +127,7 @@ public class InventoryUI : MonoBehaviour
 
     private void ShowInventory()
     {
-        foreach (GameObject child in children)
+        foreach (GameObject child in childrenToControl)
         {
             child.SetActive(true);
         }

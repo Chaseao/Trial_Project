@@ -13,8 +13,5 @@ public class HealObject : ItemObject
         InventoryEvents.LoseItem(item);
     }
 
-    public override void UseEquipped(Item item)
-    {
-        throw new System.NotImplementedException();
-    }
+    public override void UseEquipped(Item item) { }
 }

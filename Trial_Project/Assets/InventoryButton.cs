@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventoryButton : MonoBehaviour
 {
@@ -9,13 +6,13 @@ public class InventoryButton : MonoBehaviour
 
     private void OnEnable()
     {
-        InventoryEvents.InventoryOpenned += () => inventoryIsOpen = true;
+        InventoryEvents.InventoryOpened += () => inventoryIsOpen = true;
         InventoryEvents.InventoryClosed += () => inventoryIsOpen = false;
     }
 
     private void OnDisable()
     {
-        InventoryEvents.InventoryOpenned -= () => inventoryIsOpen = true;
+        InventoryEvents.InventoryOpened -= () => inventoryIsOpen = true;
         InventoryEvents.InventoryClosed -= () => inventoryIsOpen = false;
     }
 

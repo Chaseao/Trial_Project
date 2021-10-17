@@ -6,21 +6,15 @@ using System;
 public static class InventoryEvents
 {
     static public Action<Item> ItemGained;
-    static public Action<Item, int> MultipleItemsGained;
     static public Action<Item> ItemLost;
-    static public Action<Item> UseItem;
-    static public Action<Item> EquipCrystal;
-    static public Action InventoryOpenned;
+    static public Action<Item> ItemUsed;
+    static public Action<Item> CrystalEquipped;
+    static public Action InventoryOpened;
     static public Action InventoryClosed;
 
-    public static void PickUpItem(Item item)
+    public static void GainItem(Item item)
     {
         ItemGained?.Invoke(item);
-    }
-
-    public static void PickUpMultipleItems(Item item, int amount)
-    {
-        MultipleItemsGained?.Invoke(item, amount);
     }
 
     public static void LoseItem(Item item)
@@ -28,15 +22,15 @@ public static class InventoryEvents
         ItemLost?.Invoke(item);
     }
 
-    public static void Use(Item item)
+    public static void UseItem(Item item)
     {
-        UseItem?.Invoke(item);
+        ItemUsed?.Invoke(item);
     }
 
-    public static void Equip(Item crystalItem)
+    public static void EquipCrystal(Item crystalItem)
     {
         if (crystalItem.itemtype == ItemType.Crystal) {
-            EquipCrystal?.Invoke(crystalItem);
+            CrystalEquipped?.Invoke(crystalItem);
         }
         else
         {
@@ -46,7 +40,7 @@ public static class InventoryEvents
 
     public static void OpenInventory()
     {
-        InventoryOpenned?.Invoke();
+        InventoryOpened?.Invoke();
     }
 
     public static void CloseInventory()

@@ -19,6 +19,6 @@ public class ItemTester : MonoBehaviour
 
     public void UseItem()
     {
-        InventoryEvents.Use(item);
+        InventoryEvents.UseItem(item);
     }
 }
