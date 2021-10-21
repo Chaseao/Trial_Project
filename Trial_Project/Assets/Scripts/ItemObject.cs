@@ -10,6 +10,7 @@ public enum ItemType
 public abstract class ItemObject : ScriptableObject
 {
     public int id;
+    public string description;
     public Sprite ui_icon;
     public ItemType ItemType { get; set; }
     public bool isStackable;
@@ -51,3 +52,4 @@ public class Item
         itemUses = item.itemUses;
     }
 }
+

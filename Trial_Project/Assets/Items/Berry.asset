@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Berry
   m_EditorClassIdentifier: 
   id: 0
+  description: This is a berry, yum
   ui_icon: {fileID: 21300000, guid: 886e20b3044e5924e8a532f567722f97, type: 3}
   isStackable: 1
   healAmount: 10

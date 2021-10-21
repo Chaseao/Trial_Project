@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Water Crystal
   m_EditorClassIdentifier: 
   id: 0
+  description: Taking a chill pill of water
   ui_icon: {fileID: 21300000, guid: b36c3287b2d0fee4c8e7c80aebde9598, type: 3}
   isStackable: 0
   maxUses: 10

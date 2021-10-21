@@ -47,7 +47,7 @@ public class SlotUI : MonoBehaviour
     {
         if (slot != null)
         {
-            slot.item.itemObject.Use(slot.item);
+            InventoryEvents.SetItemToBeUsed(slot.item);
         }
     }
 }

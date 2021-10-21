@@ -8,7 +8,9 @@ public static class InventoryEvents
     static public Action<Item> ItemGained;
     static public Action<Item> ItemLost;
     static public Action<Item> ItemUsed;
+    static public Action<Item> ItemSetToBeUsed;
     static public Action<Item> CrystalEquipped;
+    static public Action<InventorySystem> InventoryUpdated;
     static public Action InventoryOpened;
     static public Action InventoryClosed;
 
@@ -38,6 +40,11 @@ public static class InventoryEvents
         }
     }
 
+    public static void UpdateInventory(InventorySystem inventory)
+    {
+        InventoryUpdated?.Invoke(inventory);
+    }
+
     public static void OpenInventory()
     {
         InventoryOpened?.Invoke();
@@ -46,5 +53,10 @@ public static class InventoryEvents
     public static void CloseInventory()
     {
         InventoryClosed?.Invoke();
+    }
+
+    public static void SetItemToBeUsed(Item item)
+    {
+        ItemSetToBeUsed?.Invoke(item);
     }
 }

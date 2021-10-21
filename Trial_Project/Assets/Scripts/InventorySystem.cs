@@ -9,12 +9,13 @@ public class InventorySystem : ScriptableObject
     [SerializeField] int totalAmountOfSlots;
     Dictionary<Item, int> items = new Dictionary<Item, int>();
     Item currentlyEquippedCrystal;
+    bool active = true;
 
 
     public int TotalAmountOfSlots => totalAmountOfSlots;
     public Dictionary<Item, int> GetItemsInInventory() => items;
     public Item CurrentlyEquippedCrystal => currentlyEquippedCrystal;
-
+    public bool Active => active;
 
 
     private void Awake()
@@ -24,19 +25,29 @@ public class InventorySystem : ScriptableObject
 
     private void OnEnable()
     {
+        if (active) 
+            Activate();
+    }
+
+    public void Activate()
+    {
         InventoryEvents.ItemGained += AddItem;
         InventoryEvents.ItemLost += LoseItem;
         InventoryEvents.ItemUsed += UseItem;
         InventoryEvents.CrystalEquipped += Equip;
         currentlyEquippedCrystal = null;
+
+        active = true;
     }
 
-    private void OnDisable()
+    public void Deactivate()
     {
         InventoryEvents.ItemGained -= AddItem;
         InventoryEvents.ItemLost -= LoseItem;
         InventoryEvents.ItemUsed -= UseItem;
         InventoryEvents.CrystalEquipped -= Equip;
+
+        active = false;
     }
 
     public void PrintItems()
@@ -52,7 +63,7 @@ public class InventorySystem : ScriptableObject
         }
     }
 
-    public void UseItem(Item newItem)
+    private void UseItem(Item newItem)
     {
         bool itemInInventory = CheckForItemOfSameType(newItem);
 
@@ -62,7 +73,7 @@ public class InventorySystem : ScriptableObject
         }
     }
 
-    public void AddItem(Item newItem)
+    private void AddItem(Item newItem)
     {
         Item itemMatch = FindMatchingItemOfSameType(newItem);
 
@@ -80,11 +91,11 @@ public class InventorySystem : ScriptableObject
             Debug.Log($"Inventory was full discarding {newItem.name}");
         }
 
+        InventoryEvents.UpdateInventory(this);
     }
 
-    public void Equip(Item itemToEquip)
+    private void Equip(Item itemToEquip)
     {
-
         if (items.ContainsKey(itemToEquip))
         {
             if (currentlyEquippedCrystal != null)
@@ -97,7 +108,7 @@ public class InventorySystem : ScriptableObject
         }
     }
 
-    public void LoseItem(Item newItem)
+    private void LoseItem(Item newItem)
     {
         Item matchingItem = FindMatchingItemOfSameType(newItem);
 
@@ -109,6 +120,8 @@ public class InventorySystem : ScriptableObject
             {
                 items.Remove(matchingItem);
             }
+
+            InventoryEvents.UpdateInventory(this);
         }
     }
 

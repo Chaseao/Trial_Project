@@ -18,18 +18,14 @@ public class InventoryUI : MonoBehaviour
 
     private void OnEnable()
     {
-        InventoryEvents.ItemGained += UpdateInventoryUI;
-        InventoryEvents.ItemLost += UpdateInventoryUI;
-        InventoryEvents.CrystalEquipped += UpdateEquipmentUI;
+        InventoryEvents.InventoryUpdated += UpdateInventoryUI;
         InventoryEvents.InventoryOpened += ShowInventory;
         InventoryEvents.InventoryClosed += HideInventory;
     }
 
     private void OnDisable()
     {
-        InventoryEvents.ItemGained -= UpdateInventoryUI;
-        InventoryEvents.ItemLost -= UpdateInventoryUI;
-        InventoryEvents.CrystalEquipped -= UpdateEquipmentUI;
+        InventoryEvents.InventoryUpdated -= UpdateInventoryUI;
         InventoryEvents.InventoryOpened -= ShowInventory;
         InventoryEvents.InventoryClosed -= HideInventory;
     }
@@ -38,8 +34,7 @@ public class InventoryUI : MonoBehaviour
     {
         SetListOfChildrenToControl();
         HideInventory();
-        UpdateInventoryUI();
-        UpdateEquipmentUI();
+        UpdateInventoryUI(connectedInventory);
     }
 
     private void SetListOfChildrenToControl()
@@ -97,23 +92,26 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public void UpdateInventoryUI(Item notNeeded = null)
+    public void UpdateInventoryUI(InventorySystem updatedInventory)
     {
-        Dictionary<Item, int> inventory = connectedInventory.GetItemsInInventory();
+        if (updatedInventory.Equals(connectedInventory))
+        {
+            Dictionary<Item, int> inventory = connectedInventory.GetItemsInInventory();
 
-        CreateEmptyInventorySlotsArray();
-        FillArraySlotsWithItemsFromInventory(inventory);
+            CreateEmptyInventorySlotsArray();
+            FillArraySlotsWithItemsFromInventory(inventory);
 
-        displayUI.UpdateSlots(slots[currentSlotSet]);
+            displayUI.UpdateSlots(slots[currentSlotSet]);
+            UpdateEquipmentUI();
+        }
     }
 
-    public void UpdateEquipmentUI(Item notNeeded = null)
+    public void UpdateEquipmentUI()
     {
         if (connectedInventory.CurrentlyEquippedCrystal != null)
         {
             Slot newSlot = new Slot(connectedInventory.CurrentlyEquippedCrystal, 1);
             displayUI.SetEquipmentSlot(newSlot);
-            UpdateInventoryUI();
         }
     }
 

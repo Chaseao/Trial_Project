@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Fire Crystal
   m_EditorClassIdentifier: 
   id: 0
+  description: Feel the power of fire!
   ui_icon: {fileID: 21300000, guid: f338a87a1104f1f4db153743dfb4c64f, type: 3}
   isStackable: 0
   maxUses: 3
